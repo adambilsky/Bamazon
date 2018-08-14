@@ -1,5 +1,8 @@
 // Load the NPM Package inquirer
 var inquirer = require("inquirer");
+var shoppingCart = [];
+var shoppingCartTotal = 0;
+var p = 0; // position of items in shopping cart
 
 // Create connection to database
 var mysql = require('mysql');
@@ -36,9 +39,6 @@ function productDisplay() {
 
 // Create a "Prompt" with a series of questions.
 function startSession() {
-  var shoppingCart = [];
-  var shoppingCartTotal = 0;
-  var p = 0; // position of items in shopping cart
   function shoppingCartReport() {
     console.log("Your cart contains the following:\n",
       shoppingCart,
