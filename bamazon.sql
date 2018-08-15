@@ -8,7 +8,7 @@ CREATE TABLE products(
     departmentNAME VARCHAR(40),
     itemPRICE INTEGER(9),
     stockQTY INTEGER(9),
-    PRIMARY KEY(id)
+    PRIMARY KEY(itemID)
 );
 
 INSERT INTO products (productNAME, departmentNAME, itemPRICE, stockQTY) VALUES ('Sweet Home Alabama', 'Songs', 5, 99);

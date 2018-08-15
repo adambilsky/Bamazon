@@ -1,16 +1,17 @@
+var mysql = require('mysql');
 // Load the NPM Package inquirer
 var inquirer = require("inquirer");
 var shoppingCart = [];
+var inventory;
 var shoppingCartTotal = 0;
 var p = 0; // position of items in shopping cart
 
 // Create connection to database
-var mysql = require('mysql');
 var connection = mysql.createConnection({
   host: 'localhost',
   port: 3306,
   user: 'root',
-  password: 'memph15NY',
+  password: 'password',
   database: 'bamazon_db'
 });
 connection.connect(function (err) {
@@ -18,13 +19,19 @@ connection.connect(function (err) {
   console.log("Connected!");
   productDisplay();
 });
-
+function updateItems(customerPick) {
+  console.log("Updating our inventory...\n");
+  var query = connection.query(
+    `UPDATE products SET stockQTY = '${customerPick.stockQTY - customerPick.answer.custQty}' WHERE itemID = '${customerPick.itemID}'`,
+  )
+}
 // Display available items
 function productDisplay() {
   console.log("\n Welcome to Bamazon! \n Please wait while our current inventory loads.\n")
   var query = "SELECT * FROM products";
   connection.query(query, function (err, result) {
     if (err) throw err;
+    inventory = result;
     for (var i = 0; i < result.length; i++) {
       console.log(
         "Item ID: ", result[i].itemID,
@@ -61,23 +68,31 @@ function startSession() {
         name: "custQty"
       }])
     .then(function (answer) {
-      var query = "SELECT itemID, productNAME, itemPRICE, stockQTY FROM products WHERE ?";
-      connection.query(query, { itemID: answer.custItem }, function (err, response) {
-        // Check to make sure the given ID is valid
-        if (err) {
-          console.log("We're sorry, we cannot find an item with that ID. Please try again.");
-          startSession();
-        }
-        // Check to make sure the item is in stock
-        else if (response[0].stockQTY < answer.custQty) {
+      //var customerPick = inventory.find(item => item.itemID === parseInt(answer.custItem));
+      // find method essentially loops over the array
+      // 
+      var customerPick = inventory.find(function(item) {
+        return item.itemID === parseInt(answer.custItem);
+      });
+
+      customerPick.answer = { ...answer }; // spread operator
+      // var query = "SELECT itemID, productNAME, itemPRICE, stockQTY FROM products WHERE ?";
+      // connection.query(query, { itemID: answer.custItem }, function (err, response) {
+      //   // Check to make sure the given ID is valid
+      //   if (err) {
+      //     console.log("We're sorry, we cannot find an item with that ID. Please try again.");
+      //     startSession();
+      //   }
+      //   // Check to make sure the item is in stock
+        if (customerPick.stockQTY < answer.custQty) {
           console.log("We're sorry, we do not have enough in stock to meet your request.");
           startSession();
         }
-        // set local variables to hold the current portion of the purchase
+      //   // set local variables to hold the current portion of the purchase
         else {
-          var currentItem = response[0].productNAME;
+          var currentItem = customerPick.productNAME;
           var currentNum = parseInt(answer.custQty);
-          var currentCost = parseInt(response[0].itemPRICE);
+          var currentCost = parseInt(customerPick.itemPRICE);
           var subtotal = currentNum * currentCost;
           
           // Confirm the purchase 
@@ -93,7 +108,8 @@ function startSession() {
             .then(function (answer) {
               if (answer.custConfirm) {
                 console.log("Thank you for your purchase!")
-                // Update shopping cart
+                // Update shopping cart and database
+                updateItems(customerPick);
                 shoppingCart.push(
                   {
                     item: currentItem,
@@ -131,5 +147,4 @@ function startSession() {
             })
         };
       });
-    });
 }
