@@ -14,11 +14,13 @@ var connection = mysql.createConnection({
   password: 'password',
   database: 'bamazon_db'
 });
+
 connection.connect(function (err) {
   if (err) throw err;
   console.log("Connected!");
   productDisplay();
 });
+
 function updateItems(customerPick) {
   console.log("Updating our inventory...\n");
   var query = connection.query(
@@ -70,81 +72,79 @@ function startSession() {
     .then(function (answer) {
       //var customerPick = inventory.find(item => item.itemID === parseInt(answer.custItem));
       // find method essentially loops over the array
-      // 
-      var customerPick = inventory.find(function(item) {
+      var customerPick = inventory.find(function (item) {
         return item.itemID === parseInt(answer.custItem);
       });
 
       customerPick.answer = { ...answer }; // spread operator
-      // var query = "SELECT itemID, productNAME, itemPRICE, stockQTY FROM products WHERE ?";
-      // connection.query(query, { itemID: answer.custItem }, function (err, response) {
-      //   // Check to make sure the given ID is valid
       //   if (err) {
       //     console.log("We're sorry, we cannot find an item with that ID. Please try again.");
       //     startSession();
       //   }
-      //   // Check to make sure the item is in stock
-        if (customerPick.stockQTY < answer.custQty) {
-          console.log("We're sorry, we do not have enough in stock to meet your request.");
-          startSession();
-        }
-      //   // set local variables to hold the current portion of the purchase
-        else {
-          var currentItem = customerPick.productNAME;
-          var currentNum = parseInt(answer.custQty);
-          var currentCost = parseInt(customerPick.itemPRICE);
-          var subtotal = currentNum * currentCost;
-          
-          // Confirm the purchase 
-          inquirer
-            .prompt(
-              {
-                type: "confirm",
-                message: "You would like to purchase " + currentNum +
-                  " units of " + currentItem + " at $" +
-                  currentCost + "each, for a total of $" + subtotal + ". Is this correct?",
-                name: "custConfirm"
-              })
-            .then(function (answer) {
-              if (answer.custConfirm) {
-                console.log("Thank you for your purchase!")
-                // Update shopping cart and database
-                updateItems(customerPick);
-                shoppingCart.push(
-                  {
-                    item: currentItem,
-                    quantity: currentNum,
-                    cost: currentCost,
-                    subtotal: subtotal
-                  }
-                );
-                shoppingCartTotal += subtotal;
-                p++;
-                shoppingCartReport();
-                inquirer
-                  .prompt(
-                    {
-                      type: "confirm",
-                      message: "Would you like to purchase anything else?",
-                      name: "custAddItems"
-                    }
-                  )
-                  .then(function (answer) {
-                    if (answer.custAddItems) {
-                      startSession();
-                    }
-                    else {
-                      console.log("Thanks for shopping with us today!")
-                      shoppingCartReport();
-                      connection.end();
-                    }
-                  })
-              }
-              else {
-                console.log("We're sorry, please try again.");
-                startSession();
-              }
+
+      // Check to make sure the item is in stock
+      if (customerPick.stockQTY < answer.custQty) {
+        console.log("\n We're sorry, we do not have enough in stock to meet your request.");
+        startSession();
+      }
+      // set local variables to hold the current portion of the purchase
+      else {
+        var currentItem = customerPick.productNAME;
+        var currentNum = parseInt(answer.custQty);
+        var currentCost = parseInt(customerPick.itemPRICE);
+        var subtotal = currentNum * currentCost;
+
+        // Confirm the purchase 
+        inquirer
+          .prompt(
+            {
+              type: "confirm",
+              message: "\n You would like to purchase " + currentNum +
+                " units of " + currentItem + " at $" +
+                currentCost + " each, for a total of $" + subtotal + ". \n Is this correct?",
+              name: "custConfirm"
             })
-        };
-      });
+          .then(function (answer) {
+            if (answer.custConfirm) {
+              console.log("\n Thank you for your purchase!")
+
+              // Update shopping cart and database
+              updateItems(customerPick);
+              shoppingCart.push(
+                {
+                  item: currentItem,
+                  quantity: currentNum,
+                  cost: currentCost,
+                  subtotal: subtotal
+                }
+              );
+              shoppingCartTotal += subtotal;
+              p++;
+              shoppingCartReport();
+              inquirer
+                .prompt(
+                  {
+                    type: "confirm",
+                    message: "\n Would you like to purchase anything else?",
+                    name: "custAddItems"
+                  }
+                )
+                .then(function (answer) {
+                  if (answer.custAddItems) {
+                    productDisplay();
+                  }
+                  else {
+                    console.log("Thanks for shopping with us today!")
+                    shoppingCartReport();
+                    connection.end();
+                  }
+                })
+            }
+            else {
+              console.log("We're sorry, please try again.");
+              startSession();
+            }
+          })
+      };
+    });
 }
