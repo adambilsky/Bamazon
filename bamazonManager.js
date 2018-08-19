@@ -133,6 +133,48 @@ function addInventory() {
 }
 
 function addProduct() {
-    console.log("Functionality under Construction. Please try again later.");
-    managerPrompt();
+    // console.log("Functionality under Construction. Please try again later.");
+    inquirer    
+        .prompt([
+            {
+                type: "input",
+                message: "Enter item NAME: ",
+                name: "newNAME"
+            },
+            {
+                type: "input",
+                message: "Enter item DEPARTMENT: ",
+                name: "newDEPT"
+            },
+            {
+                type: "input",
+                message: "Enter item PRICE: ",
+                name: "newPRICE"
+            },
+            {
+                type: "input",
+                message: "Enter starting QUANTITY: ",
+                name: "newQTY"
+            }
+        ]).then(function(answer) {
+            var newName = answer.newNAME;
+            var newDept = answer.newDEPT;
+            var newPrice = answer.newPRICE;
+            var newQty = answer.newQTY;
+            console.log("Updating inventory...");
+            var query = connection.query(
+                "INSERT INTO products SET ?",
+                {
+                    productNAME: newName,
+                    departmentNAME: newDept,
+                    itemPRICE: newPrice,
+                    stockQTY: newQty
+                },
+                function(err, res) {
+                    console.log(res.affectedRows + " product inserted!\n");
+                }
+            );
+            managerPrompt();
+
+        })
 }
