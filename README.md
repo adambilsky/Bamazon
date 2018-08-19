@@ -4,7 +4,7 @@ This is the NU Bootcamp assignment for weeks 12-13 using node.js and MySQL.
 On opening **BamazonCustomer** , the user is shown the current inventory via the productDisplay function,
 and prompted to make a purchase by typing the desired itemID. 
 
-< first png >
+https://github.com/adambilsky/Bamazon/blob/master/images/bamCustomer-main.png
 
 After entering an item ID, the "find" method matches the entered itemID against the inventory ID's to validate the entry,
 then ensures sufficient stock quantity before allowing the purchase.
