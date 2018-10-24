@@ -10,7 +10,7 @@ https://github.com/adambilsky/Bamazon/blob/master/images/bamCustomer-main.png
 After entering an item ID, the "find" method matches the entered itemID against the inventory ID's to validate the entry,
 then ensures sufficient stock quantity before allowing the purchase.
 
-https://github.com/adambilsky/Bamazon/blob/master/images/bamCustomerInsufficientQuantity.png
+![alt text](https://github.com/adambilsky/Bamazon/blob/master/images/bamCustomerInsufficientQuantity.png?raw=true "Insufficient Quantity")
 
 The user is prompted to confirm with the name, amount, unit price, and current 'subtotal.' 
 
