@@ -5,7 +5,7 @@ On opening **BamazonCustomer** , the user is shown the current inventory via the
 and prompted to make a purchase by typing the desired itemID. 
 
 https://github.com/adambilsky/Bamazon/blob/master/images/bamCustomer-main.png
-![alt text]relative/Bamazon/blob/master/images/bamCustomer-main.png?raw=true"Main Customer Page"
+![alt text](relative/Bamazon/blob/master/images/bamCustomer-main.png?raw=true"Main Customer Page")
 
 After entering an item ID, the "find" method matches the entered itemID against the inventory ID's to validate the entry,
 then ensures sufficient stock quantity before allowing the purchase.
